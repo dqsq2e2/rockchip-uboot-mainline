@@ -43,3 +43,9 @@ echo "关键文件："
 echo "  idbloader.img  → 写入 32KB 偏移 (sector 64)"
 echo "  u-boot.itb     → 写入 1MB 偏移 (sector 0x800)"
 echo ""
+
+rm -rf output
+mkdir -p output
+cp -a idbloader.img u-boot.itb u-boot.bin u-boot.img output/
+
+echo "All done!"
