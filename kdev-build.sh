@@ -13,6 +13,9 @@ export BL31="${WORKDIR}/rkbin/bin/rk35/rk3588_bl31_v1.54.elf"
 export ROCKCHIP_TPL="${WORKDIR}/rkbin/bin/rk35/rk3588_ddr_lp4_1800MHz_lp5_2400MHz_v1.21.bin"
 # export TEE="${WORKDIR}/rkbin/bin/rk35/rk3588_bl32_v1.20.bin"
 
+ls -alh ${BL31}
+ls -alh ${ROCKCHIP_TPL}
+
 cd "$WORKDIR"
 make distclean
 make "$DEFCONFIG"
