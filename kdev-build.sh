@@ -33,6 +33,10 @@ cp -a u-boot-rockchip-spi.bin \
 	u-boot.img \
 	output/
 
+dtc -I dtb -O dts  ./dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dtb -o rk3588-bdy-g98.dts
+
 ls -alh output/
+ls -alh   dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dts
+ls -alh   configs/bdy-g98-rk3588_defconfig
 
 echo "All done!"

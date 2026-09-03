@@ -145,3 +145,4 @@ __pycache__
 /binman-fake
 /back
 /deprecated
+/rk3588-bdy-g98.dts
