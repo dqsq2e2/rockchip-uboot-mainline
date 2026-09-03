@@ -15,9 +15,11 @@ export ROCKCHIP_TPL="${WORKDIR}/rkbin/bin/rk35/rk3588_ddr_lp4_1800MHz_lp5_2400MH
 
 ls -alh ${BL31}
 ls -alh ${ROCKCHIP_TPL}
+sha256sum ${BL31}
+sha256sum ${ROCKCHIP_TPL}
 
 cd "$WORKDIR"
-make distclean
+make mrproper
 make "$DEFCONFIG"
 make -j"$JOBS"
 
