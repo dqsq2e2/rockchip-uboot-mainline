@@ -24,23 +24,26 @@ cp -a only-spi/rk3588-bdy-g98.dts        dts/upstream/src/arm64/rockchip/rk3588-
 cp -a only-spi/bdy-g98-rk3588_defconfig  configs/bdy-g98-rk3588_defconfig
 
 cd "$WORKDIR"
+rm -rf output
+mkdir -p output
+cd rkbin
+./tools/boot_merger `pwd`/RKBOOT/RK3588MINIALL.ini
+mv rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/
+
+cd "$WORKDIR"
 make mrproper
 make "$DEFCONFIG"
 make -j"$JOBS"
 
-rm -rf output
-mkdir -p output
-cp -a u-boot-rockchip-spi.bin \
-	u-boot-rockchip.bin \
-	idbloader.img \
-	u-boot.itb \
-	u-boot.bin \
-	u-boot.img \
-	output/
+cp -a u-boot.itb ${WORKDIR}/output/uboot.img
 
-dtc -I dtb -O dts  ./dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dtb -o rk3588-bdy-g98.dts
+# only-emmc
 
-ls -alh output/
+#dtc -I dtb -O dts  ./dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dtb -o rk3588-bdy-g98.dts
+fdtdump ./dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dtb > rk3588-bdy-g98.dts
+fdtdump ./spl/dts/dt-spl.dtb > dt-spl.dts
+
+ls -alh   output/
 ls -alh   dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dts
 ls -alh   configs/bdy-g98-rk3588_defconfig
 

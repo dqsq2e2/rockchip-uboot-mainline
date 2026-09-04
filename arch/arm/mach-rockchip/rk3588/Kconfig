@@ -108,6 +108,25 @@ config TARGET_KHADAS_EDGE2_RK3588
 	  1x HDMI 2.1 output, 1x DP 1.4 output
 	  USB PD over USB Type-C
 
+config TARGET_BDY_G98_RK3588
+        bool "BDY G98 RK3588 board"
+        help
+          BDY G98 is a Rockchip RK3588 based high-performance edge computing
+          board, specially designed for multi-network gateway and NAS
+          applications.
+
+          Specification:
+          Rockchip RK3588 SoC (8-core ARM architecture)
+            4x Cortex-A76 @ up to 2.4GHz, 4x Cortex-A55
+          ARM Mali-G610 MP4 GPU, with built-in NPU up to 6 TOPS INT8
+          Onboard 16GB DDR4 memory (non-expandable)
+          Storage: 2x NVMe (PCIe 3.0 x2) + 1x SATA interface
+          Networking: 10x RJ45 Ethernet ports
+            2x 2.5G Ethernet + 8x Gigabit Ethernet
+          USB: 2x USB 3.0 ports
+          Power Supply: Dual redundant design (220V AC input + DC-IN)
+          No built-in Wi-Fi module
+
 config TARGET_NANOPCT6_RK3588
 	bool "FriendlyElec NanoPC-T6 RK3588 board"
 	help
