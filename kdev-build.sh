@@ -18,6 +18,11 @@ ls -alh ${ROCKCHIP_TPL}
 sha256sum ${BL31}
 sha256sum ${ROCKCHIP_TPL}
 
+# only-spi
+cp -a only-spi/spl.c                     common/spl/spl.c
+cp -a only-spi/rk3588-bdy-g98.dts        dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dts
+cp -a only-spi/bdy-g98-rk3588_defconfig  configs/bdy-g98-rk3588_defconfig
+
 cd "$WORKDIR"
 make mrproper
 make "$DEFCONFIG"
