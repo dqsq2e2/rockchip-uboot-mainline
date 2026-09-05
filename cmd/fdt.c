@@ -282,10 +282,15 @@ static int do_fdt(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
 	}
 
 	if (!working_fdt) {
-		puts("No FDT memory address configured. Please configure\n"
-		     "the FDT address via \"fdt addr <address>\" command.\n"
-		     "Aborting!\n");
-		return CMD_RET_FAILURE;
+		if (gd->fdt_blob && !fdt_check_header(gd->fdt_blob)) {
+			working_fdt = (struct fdt_header *)gd->fdt_blob;
+			printf("Working FDT set by default to the control FDT\n");
+		} else {
+			printf("No FDT memory address configured. Please configure\n");
+			printf("the FDT address via \"fdt addr <address>\" command.\n");
+			printf("Aborting!\n");
+			return CMD_RET_FAILURE;
+		}
 	}
 
 #ifdef CONFIG_OF_SYSTEM_SETUP
