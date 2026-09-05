@@ -202,6 +202,20 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
+	// vcc5v0-otg-regulator
+	vcc5v0_otg: regulator-vbus5v0-usb-otg {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio4 RK_PA7 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc5v0_otg_en>;
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-name = "vcc5v0_otg";
+		vin-supply = <&vcc5v0_sys>;
+		u-boot,dm-pre-reloc;
+	};
+
 	vcc3v3_pcie2x1l0: regulator-vcc3v3-pcie2x1l0 {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -723,6 +737,10 @@
 			rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
+		vcc5v0_otg_en: vcc5v0-otg-en {
+			rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
 		usbc0_int: usbc0-int {
 			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
@@ -1162,10 +1180,7 @@
 };
 
 &usbdp_phy0 {
-	mode-switch;
-	orientation-switch;
-	sbu1-dc-gpios = <&gpio4 RK_PA6 GPIO_ACTIVE_HIGH>;
-	sbu2-dc-gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_HIGH>;
+	phy-supply = <&vcc5v0_otg>;
 	status = "okay";
 };
 
@@ -1182,19 +1197,24 @@
 	status = "okay";
 };
 
+// usb@fc000000
+// Bus usb@fc000000: Register 2000140 NbrPorts 2 otg下载口
 &usb_host0_xhci {
 	dr_mode = "otg";
-	maximum-speed = "high-speed";
-	usb-role-switch;
+	maximum-speed = "super-speed";
+	//usb-role-switch;
 	status = "okay";
 	u-boot,dm-pre-reloc;
 };
 
+// usb@fc400000，刷机口旁边的USB 3.0 正常
 &usb_host1_xhci {
 	dr_mode = "host";
 	status = "okay";
 	u-boot,dm-pre-reloc;
 };
+
+// &usb_host2_xhci usb@fcd00000 disabled
 
 &usb_host1_ehci {
 	status = "okay";

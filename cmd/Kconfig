@@ -1860,6 +1860,12 @@ config CMD_RBROM
 	help
           Rockchip rbrom
 
+config CMD_DOWNLOAD
+	bool "download"
+	depends on USB_FUNCTION_ROCKUSB
+	help
+          Rockchip download
+
 config CMD_USB_MASS_STORAGE
 	bool "UMS usb mass storage"
 	depends on BLK && USB_GADGET_DOWNLOAD

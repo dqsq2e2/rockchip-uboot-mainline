@@ -164,6 +164,7 @@ obj-$(CONFIG_CMD_RNG) += rng.o
 obj-$(CONFIG_CMD_KASLRSEED) += kaslrseed.o
 obj-$(CONFIG_CMD_RKMTD) += rkmtd.o
 obj-$(CONFIG_CMD_ROCKUSB) += rockusb.o
+obj-$(CONFIG_CMD_DOWNLOAD) += download.o
 obj-$(CONFIG_CMD_RBROM) += rbrom.o
 obj-$(CONFIG_CMD_RTC) += rtc.o
 obj-$(CONFIG_SANDBOX) += host.o
