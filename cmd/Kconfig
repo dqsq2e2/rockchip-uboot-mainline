@@ -1854,6 +1854,12 @@ config CMD_ROCKUSB
 	  support to communication with rockusb device. for more detail about
 	  this command, please read doc/README.rockusb.
 
+config CMD_RBROM
+	bool "rbrom"
+	depends on USB_FUNCTION_ROCKUSB
+	help
+          Rockchip rbrom
+
 config CMD_USB_MASS_STORAGE
 	bool "UMS usb mass storage"
 	depends on BLK && USB_GADGET_DOWNLOAD
