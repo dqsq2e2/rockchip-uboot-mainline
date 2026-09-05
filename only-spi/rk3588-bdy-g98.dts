@@ -246,8 +246,6 @@
 	};
 };
 
-
-
 // sfc: spi@fe2b0000
 &sfc {
 	status = "okay";
@@ -256,6 +254,8 @@
 	bootph-all;
 	bootph-pre-ram;
 	bootph-some-ram;
+	pinctrl-names = "default";
+	pinctrl-0 = <&fspim0_pins>;
 	/delete-node/ flash@1;
 
 	spi_nor: flash@0 {
@@ -271,7 +271,6 @@
 		bootph-pre-ram;
 		bootph-some-ram;
 	};
-
 };
 
 &combphy0_ps {
@@ -845,22 +844,6 @@
 	vmmc-supply = <&vcc3v3_sd_s0>;
 	vqmmc-supply = <&vccio_sd_s0>;
 	status = "okay";
-};
-
-/* optional on non-LTS, populated on LTS version */
-&sfc {
-	pinctrl-names = "default";
-	pinctrl-0 = <&fspim1_pins>;
-	status = "okay";
-
-	flash@0 {
-		compatible = "jedec,spi-nor";
-		reg = <0>;
-		spi-max-frequency = <104000000>;
-		spi-rx-bus-width = <4>;
-		spi-tx-bus-width = <1>;
-		vcc-supply = <&vcc_1v8_s3>;
-	};
 };
 
 &spi2 {
