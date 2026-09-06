@@ -240,6 +240,22 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
+	// vcc3v3-pcie30
+	vcc3v3_nvme: vcc3v3-nvme {
+		compatible = "regulator-fixed";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-name = "vcc3v3_nvme";
+		vin-supply = <&vcc12v_dcin>;
+		enable-active-high;
+		gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
+		startup-delay-us = <7500>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&nvme_power_en>;
+		regulator-always-on;
+		u-boot,dm-pre-reloc;
+	};
+
 	vcc3v3_sd_s0: regulator-vcc3v3-sd-s0 {
 		compatible = "regulator-fixed";
 		gpio = <&gpio4 RK_PA5 GPIO_ACTIVE_LOW>;
@@ -253,9 +269,33 @@
 
 
 &pinctrl {
+	nvme {
+		nvme_power_en: nvme-power-en {
+			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
 	usb {
 		pin_4g_lte_pwren: 4g-lte-pwren {
 			rockchip,pins = <4 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	pcie {
+		pcie2_0_rst: pcie2-0-rst {
+			rockchip,pins = <1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcie2_1_rst: pcie2-1-rst {
+			rockchip,pins = <4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcie3x2_rst: pcie3x2-rst {
+			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		pcie3x4_rst: pcie3x4-rst {
+			rockchip,pins = <4 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -627,40 +667,6 @@
 			cooling-device = <&fan 2 THERMAL_NO_LIMIT>;
 		};
 	};
-};
-
-&pcie2x1l0 {
-	reset-gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc_3v3_pcie20>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pcie2_0_rst>;
-	status = "okay";
-};
-
-&pcie2x1l1 {
-	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_pcie2x1l0>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pcie2_1_rst>;
-	status = "okay";
-};
-
-&pcie2x1l2 {
-	reset-gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc_3v3_pcie20>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pcie2_2_rst>;
-	status = "okay";
-};
-
-&pcie30phy {
-	status = "okay";
-};
-
-&pcie3x4 {
-	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_pcie30>;
-	status = "okay";
 };
 
 &pd_gpu {
@@ -1258,3 +1264,91 @@
 	status = "disabled";
 	u-boot,dm-pre-reloc;
 };
+
+/* RK3588 PCIe 3.0 x4 和 x2 共用此 PHY pcie30phy: phy@fee80000 */
+&pcie30phy {
+	status = "okay";
+	/* PHY_MODE_PCIE_NANBNB 0 = P1:PCIe3x2  +  P0:PCIe3x2 */
+	u-boot,dm-pre-reloc;
+};
+
+/* controller1 pcie3x2: pcie@fe160000 (靠近sata口的NVME槽位)*/
+&pcie3x2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie3x2_rst>;
+
+	num-lanes = <2>;
+	max-link-speed = <3>;
+
+	reset-gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_nvme>;
+
+	rockchip,bifurcation;
+
+	reset-delay-us = <100000>;
+	rockchip,phy-init-delay-us = <50000>;
+
+	phys = <&pcie30phy 0>;
+	status = "okay";
+	u-boot,dm-pre-reloc;
+};
+
+/* controller0 pcie3x4: pcie@fe150000 （靠近CPU的NVME槽位） */
+&pcie3x4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie3x4_rst>;
+
+	num-lanes = <2>;
+	max-link-speed = <3>;
+
+	reset-gpios = <&gpio4 RK_PB6 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_nvme>;
+
+	rockchip,bifurcation;
+	rockchip,phy-init-delay-us = <50000>;
+	reset-delay-us = <100000>;
+
+	phys = <&pcie30phy 1>;
+	status = "okay";
+	u-boot,dm-pre-reloc;
+};
+
+// pcie2x1l1: pcie@fe180000 RTL8125 2.5G网卡
+&pcie2x1l1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie2_1_rst>;
+	supports-clkreq;
+	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_nvme>;
+
+	/* ★ 新增：显式声明 PHY 绑定，防止驱动找不到 */
+	phys = <&combphy2_psu PHY_TYPE_PCIE>;
+	phy-names = "pcie-phy";
+
+	/* ★ 新增：确保复位释放后有足够的建立时间 */
+	/* RTL8168 要求 PERST# 释放后至少 100ms 才能开始 LTSSM */
+	reset-delay-us = <100000>;
+
+	status = "disabled";
+	u-boot,dm-pre-reloc;
+};
+
+// pcie2x1l0: pcie@fe170000 RTL8125 2.5G网卡
+&pcie2x1l0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie2_0_rst>;
+	supports-clkreq;
+	reset-gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_nvme>;
+
+	/* ★ 新增：显式声明 PHY 绑定 */
+	phys = <&combphy1_ps PHY_TYPE_PCIE>;
+	phy-names = "pcie-phy";
+
+	/* ★ 新增：复位建立时间 */
+	reset-delay-us = <100000>;
+
+	status = "disabled";
+	u-boot,dm-pre-reloc;
+};
+
