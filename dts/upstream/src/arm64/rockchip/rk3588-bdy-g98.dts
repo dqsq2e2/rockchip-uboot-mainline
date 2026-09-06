@@ -1246,3 +1246,15 @@
 	};
 };
 
+/* SATA 控制器 sata@fe210000 */
+&sata0 {
+	status = "okay";
+	phys = <&combphy0_ps PHY_TYPE_SATA>;
+	phy-names = "sata-phy";
+	u-boot,dm-pre-reloc;
+};
+
+&sata1 {
+	status = "disabled";
+	u-boot,dm-pre-reloc;
+};
