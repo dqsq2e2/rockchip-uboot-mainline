@@ -20,6 +20,7 @@ sha256sum ${ROCKCHIP_TPL}
 
 # only-spi
 cp -a only-spi/spl.c                     common/spl/spl.c
+sed -i "s#BYD G98 Compiled By yifengyou.*#BYD G98 Compiled By yifengyou v$(date +%Y.%m.%d-%H:%M:%S)\";#" only-spi/rk3588-bdy-g98.dts
 cp -a only-spi/rk3588-bdy-g98.dts        dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dts
 cp -a only-spi/bdy-g98-rk3588_defconfig  configs/bdy-g98-rk3588_defconfig
 

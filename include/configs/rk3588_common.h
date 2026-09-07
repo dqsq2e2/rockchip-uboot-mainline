@@ -35,12 +35,18 @@
 	ENV_MEM_LAYOUT_SETTINGS		\
 	ROCKCHIP_DEVICE_SETTINGS	\
        "boot_targets=" BOOT_TARGETS "\0" \
-       "boot_recovery=" \
+       "bootcmd_recovery=" \
                "sf probe 0;" \
                "sf read 0x40000000 0x0 0x2000000;" \
                "blkmap create spidisk;" \
                "blkmap map spidisk 0 0x10000 mem 0x40000000;" \
                "part list blkmap 0;" \
                "sysboot blkmap 0:2 any ${scriptaddr} /recovery.conf;\0"
+
+#undef BOOT_TARGETS
+#ifndef BOOT_TARGETS
+#define BOOT_TARGETS	"usb nvme scsi"
+#endif
+
 
 #endif /* __CONFIG_RK3588_COMMON_H */
