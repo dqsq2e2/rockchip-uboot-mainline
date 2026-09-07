@@ -34,6 +34,12 @@
 	"fdtfile=" CONFIG_DEFAULT_FDT_FILE "\0"	\
 	ENV_MEM_LAYOUT_SETTINGS		\
 	ROCKCHIP_DEVICE_SETTINGS	\
-	"boot_targets=" BOOT_TARGETS "\0"
+       "boot_targets=" BOOT_TARGETS "\0" \
+       "boot_recovery=" \
+               "sf probe 0;" \
+               "sf read 0x40000000 0x400000 0x1B00000;" \
+               "blkmap create ext4part;" \
+               "blkmap map ext4part 0 0x10000 mem 0x40000000;" \
+               "sysboot blkmap 0:0 any ${scriptaddr} /recovery.conf;\0"
 
 #endif /* __CONFIG_RK3588_COMMON_H */

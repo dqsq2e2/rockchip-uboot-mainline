@@ -15,7 +15,7 @@
 #include "rk3588.dtsi"
 
 / {
-	model = "BYD G98 Compiled By yifengyou v20260904";
+	model = "BYD G98 Compiled By yifengyou v20260908";
 	compatible = "rockchip,rk3588", "rockchip,rk3588-evb";
 
 	chosen {
@@ -226,6 +226,8 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 		vin-supply = <&vcc5v0_sys>;
+		startup-delay-us = <7500>;
+		regulator-always-on;
 	};
 
 	vcc3v3_pcie30: regulator-vcc3v3-pcie30 {
@@ -1206,8 +1208,8 @@
 // usb@fc000000
 // Bus usb@fc000000: Register 2000140 NbrPorts 2 otg下载口
 &usb_host0_xhci {
-	dr_mode = "otg";
-	maximum-speed = "super-speed";
+	dr_mode = "host";
+	//maximum-speed = "super-speed";
 	//usb-role-switch;
 	status = "okay";
 	u-boot,dm-pre-reloc;
@@ -1288,6 +1290,7 @@
 	reset-delay-us = <100000>;
 	rockchip,phy-init-delay-us = <50000>;
 
+	/delete-property/ phys;
 	phys = <&pcie30phy 0>;
 	status = "okay";
 	u-boot,dm-pre-reloc;
@@ -1308,6 +1311,7 @@
 	rockchip,phy-init-delay-us = <50000>;
 	reset-delay-us = <100000>;
 
+	/delete-property/ phys;
 	phys = <&pcie30phy 1>;
 	status = "okay";
 	u-boot,dm-pre-reloc;
@@ -1319,17 +1323,14 @@
 	pinctrl-0 = <&pcie2_1_rst>;
 	supports-clkreq;
 	reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_nvme>;
+	vpcie3v3-supply = <&vcc3v3_pcie2x1l0>;
 
-	/* ★ 新增：显式声明 PHY 绑定，防止驱动找不到 */
 	phys = <&combphy2_psu PHY_TYPE_PCIE>;
 	phy-names = "pcie-phy";
 
-	/* ★ 新增：确保复位释放后有足够的建立时间 */
-	/* RTL8168 要求 PERST# 释放后至少 100ms 才能开始 LTSSM */
 	reset-delay-us = <100000>;
 
-	status = "disabled";
+	status = "okay";
 	u-boot,dm-pre-reloc;
 };
 
@@ -1339,16 +1340,72 @@
 	pinctrl-0 = <&pcie2_0_rst>;
 	supports-clkreq;
 	reset-gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_nvme>;
+	vpcie3v3-supply = <&vcc3v3_pcie2x1l0>;
 
-	/* ★ 新增：显式声明 PHY 绑定 */
 	phys = <&combphy1_ps PHY_TYPE_PCIE>;
 	phy-names = "pcie-phy";
 
-	/* ★ 新增：复位建立时间 */
 	reset-delay-us = <100000>;
 
-	status = "disabled";
+	status = "okay";
 	u-boot,dm-pre-reloc;
 };
 
+// gmac0: ethernet@fe1b0000 motorcomm,yt9215
+&gmac0 {
+	clock_in_out = "output";
+	phy-mode = "rgmii-rxid";
+	tx_delay = <0x44>;
+	pinctrl-0 = <&gmac0_miim &gmac0_tx_bus2 &gmac0_rx_bus2 &gmac0_rgmii_clk &gmac0_rgmii_bus>;
+	pinctrl-names = "default";
+	snps,reset-active-low;
+	snps,reset-delays-us = <0x00 0x4e20 0x186a0>;
+	snps,reset-gpio = <&gpio3 RK_PD0 GPIO_ACTIVE_LOW>;
+	status = "okay";
+	u-boot,dm-pre-reloc;
+
+	fixed-link {
+		full-duplex;
+		pause;
+		speed = <1000>;
+		u-boot,dm-pre-reloc;
+		status = "okay";
+	};
+	mdio0: mdio {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		u-boot,dm-pre-reloc;
+		status = "okay";
+	};
+};
+
+// gmac1: ethernet@fe1c0000 motorcomm,yt9215
+&gmac1 {
+	clock_in_out = "output";
+	phy-mode = "rgmii-rxid";
+	tx_delay = <0x42>;
+	pinctrl-0 = <&gmac1_miim &gmac1_tx_bus2 &gmac1_rx_bus2 &gmac1_rgmii_clk &gmac1_rgmii_bus>;
+	pinctrl-names = "default";
+	snps,reset-active-low;
+	snps,reset-delays-us = <0x00 0x4e20 0x186a0>;
+	snps,reset-gpio = <&gpio4 RK_PB3 GPIO_ACTIVE_LOW>;
+	status = "okay";
+	u-boot,dm-pre-reloc;
+
+	fixed-link {
+		full-duplex;
+		pause;
+		speed = <1000>;
+		u-boot,dm-pre-reloc;
+		status = "okay";
+	};
+
+	mdio1: mdio {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		u-boot,dm-pre-reloc;
+		status = "okay";
+	};
+};
