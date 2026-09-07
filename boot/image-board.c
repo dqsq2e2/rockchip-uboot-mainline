@@ -1035,7 +1035,9 @@ int image_locate_script(void *buf, int size, const char *fit_uname,
 			 * component, so seek past the zero-terminated sequence
 			 * of image lengths to get to the actual image data
 			 */
-			while (*data++);
+			while (*data != 0 && *data != 0xFFFFFFFF)
+				data++;
+			data++;
 		}
 		break;
 	case IMAGE_FORMAT_FIT:

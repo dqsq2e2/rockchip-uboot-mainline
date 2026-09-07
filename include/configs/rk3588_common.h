@@ -41,7 +41,126 @@
                "blkmap create spidisk;" \
                "blkmap map spidisk 0 0x10000 mem 0x40000000;" \
                "part list blkmap 0;" \
-               "sysboot blkmap 0:2 any ${scriptaddr} /recovery.conf;\0"
+               "sysboot blkmap 0:2 any ${scriptaddr} /recovery.conf;\0" \
+	"try_bootscr_boot=" \
+		"for distro_bootpart in 1 2 3 4; do " \
+			"for prefix in / /boot/; do " \
+				"echo Try ${devtype} ${devnum}:${distro_bootpart} ${prefix}boot.scr; " \
+				"if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}boot.scr; then " \
+					"echo Found boot.scr on ${devtype} ${devnum}:${distro_bootpart}; " \
+					"load ${devtype} ${devnum}:${distro_bootpart} ${scriptaddr} ${prefix}boot.scr; " \
+					"source ${scriptaddr}; " \
+					"echo boot.scr returned, trying next...; " \
+				"fi; " \
+			"done; " \
+		"done; \0" \
+	"try_extlinux_boot=" \
+		"for distro_bootpart in 1 2 3 4; do " \
+			"for extlinux_path in /boot/extlinux/extlinux.conf /extlinux/extlinux.conf /extlinux.conf; do " \
+				"echo Try ${devtype} ${devnum}:${distro_bootpart} ${extlinux_path}; " \
+				"if test -e ${devtype} ${devnum}:${distro_bootpart} ${extlinux_path}; then " \
+					"echo Found extlinux.conf on ${devtype} ${devnum}:${distro_bootpart}; " \
+					"sysboot ${devtype} ${devnum}:${distro_bootpart} any ${scriptaddr} ${extlinux_path}; " \
+					"echo sysboot returned, trying next...; " \
+				"fi; " \
+			"done; " \
+		"done; \0"                                                                                      \
+	"try_recovery_boot="                                                                                    \
+		"echo Recovery: scanning ${devtype} ${devnum}; "                                                \
+		"if test -e ${devtype} ${devnum}:1 /recovery.conf; then "                                       \
+		"echo Found recovery.conf on ${devtype} ${devnum}:1; "                                          \
+		"sysboot ${devtype} ${devnum}:1 any ${scriptaddr} /recovery.conf; "                             \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:1 /boot/recovery.conf; then "                                  \
+		"echo Found recovery.conf on ${devtype} ${devnum}:1; "                                          \
+		"sysboot ${devtype} ${devnum}:1 any ${scriptaddr} /boot/recovery.conf; "                        \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:1 /recovery/recovery.conf; then "                              \
+		"echo Found recovery.conf on ${devtype} ${devnum}:1; "                                          \
+		"sysboot ${devtype} ${devnum}:1 any ${scriptaddr} /recovery/recovery.conf; "                    \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:2 /recovery.conf; then "                                       \
+		"echo Found recovery.conf on ${devtype} ${devnum}:2; "                                          \
+		"sysboot ${devtype} ${devnum}:2 any ${scriptaddr} /recovery.conf; "                             \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:2 /boot/recovery.conf; then "                                  \
+		"echo Found recovery.conf on ${devtype} ${devnum}:2; "                                          \
+		"sysboot ${devtype} ${devnum}:2 any ${scriptaddr} /boot/recovery.conf; "                        \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:2 /recovery/recovery.conf; then "                              \
+		"echo Found recovery.conf on ${devtype} ${devnum}:2; "                                          \
+		"sysboot ${devtype} ${devnum}:2 any ${scriptaddr} /recovery/recovery.conf; "                    \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:3 /recovery.conf; then "                                       \
+		"echo Found recovery.conf on ${devtype} ${devnum}:3; "                                          \
+		"sysboot ${devtype} ${devnum}:3 any ${scriptaddr} /recovery.conf; "                             \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:3 /boot/recovery.conf; then "                                  \
+		"echo Found recovery.conf on ${devtype} ${devnum}:3; "                                          \
+		"sysboot ${devtype} ${devnum}:3 any ${scriptaddr} /boot/recovery.conf; "                        \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:3 /recovery/recovery.conf; then "                              \
+		"echo Found recovery.conf on ${devtype} ${devnum}:3; "                                          \
+		"sysboot ${devtype} ${devnum}:3 any ${scriptaddr} /recovery/recovery.conf; "                    \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:4 /recovery.conf; then "                                       \
+		"echo Found recovery.conf on ${devtype} ${devnum}:4; "                                          \
+		"sysboot ${devtype} ${devnum}:4 any ${scriptaddr} /recovery.conf; "                             \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:4 /boot/recovery.conf; then "                                  \
+		"echo Found recovery.conf on ${devtype} ${devnum}:4; "                                          \
+		"sysboot ${devtype} ${devnum}:4 any ${scriptaddr} /boot/recovery.conf; "                        \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"if test -e ${devtype} ${devnum}:4 /recovery/recovery.conf; then "                              \
+		"echo Found recovery.conf on ${devtype} ${devnum}:4; "                                          \
+		"sysboot ${devtype} ${devnum}:4 any ${scriptaddr} /recovery/recovery.conf; "                    \
+		"echo sysboot returned, trying next...; "                                                       \
+		"fi; "                                                                                          \
+		"echo Recovery scan complete, no valid recovery.conf found; \0"                                 \
+	"boot_one_dev=" \
+		"run try_extlinux_boot; " \
+		"run try_bootscr_boot; \0" \
+	"bootcmd_nvme=" \
+		"echo NVMe: pci enum; pci enum; " \
+		"nvme scan; " \
+		"setenv devtype nvme; " \
+		"setenv devnum 0; if nvme dev 0; then run boot_one_dev; fi; " \
+		"setenv devnum 1; if nvme dev 1; then run boot_one_dev; fi; " \
+		"echo NVMe: no nvme bootable media; \0" \
+	"bootcmd_usb=" \
+		"echo USB: start; usb start; usb info; " \
+		"setenv devtype usb; " \
+		"setenv devnum 0; if usb dev 0; then run boot_one_dev; fi; " \
+		"setenv devnum 1; if usb dev 1; then run boot_one_dev; fi; " \
+		"echo USB: no usb bootable media; \0" \
+	"bootcmd_scsi=" \
+		"echo SCSI: scsi scan; scsi scan; " \
+		"setenv devtype scsi; " \
+		"setenv devnum 0; if scsi dev 0; then run boot_one_dev; fi; " \
+		"setenv devnum 1; if scsi dev 1; then run boot_one_dev; fi; " \
+		"echo SCSI: no scsi bootable media; \0" \
+	"bootcmd_emmc=" \
+		"echo EMMC: scanning; " \
+		"setenv devtype mmc; "  \
+		"mmc rescan; mmc info; " \
+		"setenv devnum 0; if mmc dev 0; then run boot_one_dev; fi; " \
+		"setenv devnum 1; if mmc dev 1; then run boot_one_dev; fi; " \
+		"setenv devnum 2; if mmc dev 2; then run boot_one_dev; fi; " \
+		"echo EMMC: no emmc bootable media; \0" \
+	"bootcmd=run bootcmd_usb; run bootcmd_emmc;  run bootcmd_nvme; run bootcmd_scsi; " \
+		"echo ERROR: No bootable device found! Enter loader mode; " \
+		"rockusb 0 mtd 2; \0"
 
 #undef BOOT_TARGETS
 #ifndef BOOT_TARGETS
