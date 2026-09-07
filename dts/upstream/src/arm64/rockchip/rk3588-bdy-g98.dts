@@ -1361,7 +1361,7 @@
 	snps,reset-active-low;
 	snps,reset-delays-us = <0x00 0x4e20 0x186a0>;
 	snps,reset-gpio = <&gpio3 RK_PD0 GPIO_ACTIVE_LOW>;
-	status = "okay";
+	status = "disabled";
 	u-boot,dm-pre-reloc;
 
 	fixed-link {
@@ -1369,14 +1369,14 @@
 		pause;
 		speed = <1000>;
 		u-boot,dm-pre-reloc;
-		status = "okay";
+		status = "disabled";
 	};
 	mdio0: mdio {
 		compatible = "snps,dwmac-mdio";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		u-boot,dm-pre-reloc;
-		status = "okay";
+		status = "disabled";
 	};
 };
 
@@ -1390,7 +1390,7 @@
 	snps,reset-active-low;
 	snps,reset-delays-us = <0x00 0x4e20 0x186a0>;
 	snps,reset-gpio = <&gpio4 RK_PB3 GPIO_ACTIVE_LOW>;
-	status = "okay";
+	status = "disabled";
 	u-boot,dm-pre-reloc;
 
 	fixed-link {
@@ -1398,7 +1398,7 @@
 		pause;
 		speed = <1000>;
 		u-boot,dm-pre-reloc;
-		status = "okay";
+		status = "disabled";
 	};
 
 	mdio1: mdio {
@@ -1406,6 +1406,6 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		u-boot,dm-pre-reloc;
-		status = "okay";
+		status = "disabled";
 	};
 };

@@ -35,7 +35,7 @@ make mrproper
 make "$DEFCONFIG"
 make -j"$JOBS"
 
-cp -a u-boot.itb ${WORKDIR}/output/uboot.img
+dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-only-spi.img bs=512 skip=64
 
 # only-emmc
 
