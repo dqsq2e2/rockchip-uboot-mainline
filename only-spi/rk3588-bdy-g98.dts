@@ -15,7 +15,7 @@
 #include "rk3588.dtsi"
 
 / {
-	model = "BYD G98 Compiled By yifengyou v2026.09.07-17:41:11";
+	model = "BYD G98 Compiled By yifengyou v2026.09.07-20:27:25";
 	compatible = "rockchip,rk3588", "rockchip,rk3588-evb";
 
 	chosen {
@@ -29,17 +29,21 @@
 		mmc1 = &sdmmc;
 	};
 
-	adc-keys-0 {
+	adc-keys {
 		compatible = "adc-keys";
-		io-channels = <&saradc 0>;
+		io-channels = <&saradc 1>;
 		io-channel-names = "buttons";
 		keyup-threshold-microvolt = <1800000>;
-		poll-interval = <100>;
+		u-boot,dm-pre-reloc;
+		status = "okay";
 
-		button-maskrom {
-			label = "Mask Rom";
-			linux,code = <KEY_SETUP>;
-			press-threshold-microvolt = <2000>;
+		recovery-key {
+			u-boot,dm-pre-reloc;
+
+			linux,code = <KEY_VOLUMEUP>;
+			label = "Recovery key";
+
+			press-threshold-microvolt = <1750>;
 		};
 	};
 
