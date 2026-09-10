@@ -243,9 +243,13 @@ static int rk_pcie_link_up(struct rk_pcie *priv)
 		return 1;
 	}
 
-	/* DW pre link configurations */
-	rk_pcie_configure(priv);
-
+	/*
+	 * Train the link using APB accesses only. No DBI access may
+	 * happen before the link is up: on RK3588 two controllers can
+	 * share one pcie30phy (bifurcation), and when the sibling link
+	 * is down the pipe clock feeding this controller's DBI may not
+	 * be running, so any DBI access would hang the bus.
+	 */
 	rk_pcie_disable_ltssm(priv);
 	rk_pcie_link_status_clear(priv);
 	rk_pcie_enable_debug(priv);
@@ -338,15 +342,54 @@ static int rockchip_pcie_init_port(struct udevice *dev)
 
 	/* Set RC mode */
 	rk_pcie_writel_apb(priv, 0x0, 0xf00040);
-	pcie_dw_setup_host(&priv->dw);
-
 	ret = rk_pcie_link_up(priv);
 	if (ret < 0)
-		goto err_link_up;
+		/*
+		 * Return without tearing down phy/clocks/resets: on RK3588,
+		 * pcie3x4 and pcie3x2 share one pcie30phy (bifurcation).
+		 * Tearing the shared phy down here leaves it in a state that
+		 * wedges the second controller's probe, hanging pci enum
+		 * whenever the first slot is empty. U-Boot runs too briefly
+		 * for the kept resources to matter, and the OS reinitializes
+		 * everything anyway.
+		 */
+		return ret;
+
+	/*
+	 * The link is up, so the pipe clock is running and DBI access is
+	 * safe. Only now configure speed/lanes and set up the host bridge.
+	 */
+	rk_pcie_configure(priv);
+	pcie_dw_setup_host(&priv->dw);
+
+	/*
+	 * Wait for the endpoint's config space to answer. After PERST#
+	 * deassert a device may reply to config requests with CRS for a
+	 * while (some NVMe drives take seconds); reads then return 0xffff
+	 * and the bus scan would enumerate nothing. Poll the vendor ID
+	 * until it is valid before letting the scan run.
+	 */
+	{
+		ulong vendor = 0xffff;
+		int retries;
+
+		for (retries = 0; retries < 300; retries++) {
+			pcie_dw_read_config(dev,
+					    PCI_BDF(priv->dw.first_busno + 1, 0, 0),
+					    PCI_VENDOR_ID, &vendor, PCI_SIZE_16);
+			if (vendor != 0xffff && vendor != 0x0000)
+				break;
+			mdelay(10);
+		}
+		if (retries == 300)
+			dev_err(dev, "endpoint config space not ready (vendor 0x%lx)\n",
+				vendor);
+		else if (retries)
+			dev_info(dev, "endpoint config ready after %d polls (vendor 0x%lx)\n",
+				 retries, vendor);
+	}
 
 	return 0;
-err_link_up:
-	clk_disable_bulk(&priv->clks);
 err_deassert_bulk:
 	reset_assert_bulk(&priv->rsts);
 err_power_off_phy:

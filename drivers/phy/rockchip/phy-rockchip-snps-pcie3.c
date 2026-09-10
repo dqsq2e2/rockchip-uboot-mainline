@@ -57,6 +57,7 @@ struct rockchip_p3phy_priv {
 	struct clk_bulk clks;
 	int num_lanes;
 	u32 lanes[4];
+	bool init_done;
 };
 
 struct rockchip_p3phy_ops {
@@ -165,6 +166,17 @@ static int rockchip_p3phy_init(struct phy *phy)
 	struct rockchip_p3phy_priv *priv = dev_get_priv(phy->dev);
 	int ret;
 
+	/*
+	 * One pcie30phy serves two controllers in bifurcation (lane per
+	 * consumer id), so ops->init is called once per consumer. The full
+	 * init asserts the shared p30phy reset; running it a second time
+	 * while the first controller is live kills the pipe clock of the
+	 * second controller and its DBI access then hangs the bus. Run
+	 * the real init only once, further consumers just reuse it.
+	 */
+	if (priv->init_done)
+		return 0;
+
 	ret = clk_enable_bulk(&priv->clks);
 	if (ret)
 		return ret;
@@ -175,6 +187,8 @@ static int rockchip_p3phy_init(struct phy *phy)
 	ret = ops->phy_init(phy);
 	if (ret)
 		clk_disable_bulk(&priv->clks);
+	else
+		priv->init_done = true;
 
 	return ret;
 }
@@ -185,6 +199,7 @@ static int rockchip_p3phy_exit(struct phy *phy)
 
 	clk_disable_bulk(&priv->clks);
 	reset_assert(&priv->p30phy);
+	priv->init_done = false;
 
 	return 0;
 }
