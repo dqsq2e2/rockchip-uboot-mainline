@@ -45,7 +45,7 @@
                "part list blkmap 0;" \
                "sysboot blkmap 0:2 any ${scriptaddr} /recovery.conf;\0" \
 	"try_bootscr_boot=" \
-		"for distro_bootpart in 1 2 3 4; do " \
+		"for distro_bootpart in 1 2 3 4 8 5 6 7 9; do " \
 			"for prefix in / /boot/; do " \
 				"echo Try ${devtype} ${devnum}:${distro_bootpart} ${prefix}boot.scr; " \
 				"if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}boot.scr; then " \
@@ -57,7 +57,7 @@
 			"done; " \
 		"done; \0" \
 	"try_extlinux_boot=" \
-		"for distro_bootpart in 1 2 3 4; do " \
+		"for distro_bootpart in 1 2 3 4 8 5 6 7 9; do " \
 			"for extlinux_path in /boot/extlinux/extlinux.conf /extlinux/extlinux.conf /extlinux.conf; do " \
 				"echo Try ${devtype} ${devnum}:${distro_bootpart} ${extlinux_path}; " \
 				"if test -e ${devtype} ${devnum}:${distro_bootpart} ${extlinux_path}; then " \
@@ -132,7 +132,28 @@
 		"echo Recovery scan complete, no valid recovery.conf found; \0"                                 \
 	"boot_one_dev=" \
 		"run try_extlinux_boot; " \
-		"run try_bootscr_boot; \0" \
+		"run try_bootscr_boot; " \
+		"run try_rockchip_fw; \0" \
+	"try_rockchip_fw=" \
+		"mw.l 0x01fffff8 0 1; mw.l 0x04fffff8 0 1; mw.l 0x07000000 0 1; " \
+		"read ${devtype} ${devnum}:5 0x01fffff8 0 0x14000; " \
+		"if itest.l *0x01fffff8 == 0x4c4e524b; then " \
+			"echo RKFW: KRNL kernel found on ${devtype} ${devnum}:5; " \
+			"read ${devtype} ${devnum}:6 0x04fffff8 0 0x10000; " \
+			"read ${devtype} ${devnum}:4 0x07000000 0 0x1000; " \
+			"if itest.l *0x04fffff8 == 0x4c4e524b && itest.l *0x07000000 == 0x45435352 && itest.l *0x07000800 == 0xedfe0dd0; then " \
+				"echo RKFW: booting rockchip firmware from ${devtype} ${devnum}; " \
+				"if part uuid ${devtype} ${devnum}:8 rkfw_uuid; then " \
+					"setenv rkfw_root root=PARTUUID=${rkfw_uuid}; " \
+				"elif test ${devtype} = nvme; then " \
+					"setenv rkfw_root root=/dev/nvme0n1p8; " \
+				"else " \
+					"setenv rkfw_root root=/dev/mmcblk${devnum}p8; " \
+				"fi; " \
+				"setenv bootargs ${rkfw_root} rootfstype=ext4 rootwait rw console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfeb50000; " \
+				"booti 0x02000000 0x05000000:0x2000000 0x07000800; " \
+			"fi; " \
+		"fi; \0" \
 	"bootcmd_nvme=" \
 		"echo NVMe: pci enum; pci enum; " \
 		"nvme scan; " \
