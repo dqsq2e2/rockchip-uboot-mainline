@@ -5,6 +5,7 @@ set -xe
 WORKDIR=`pwd`
 DEFCONFIG="bdy-g98-rk3588_defconfig"
 JOBS=$(nproc)
+TIMESTAMP=$(date +%Y%m%d)
 
 cd "$WORKDIR"
 export CROSS_COMPILE=aarch64-linux-gnu-
@@ -30,7 +31,11 @@ mkdir -p output
 cd rkbin
 ./tools/boot_merger `pwd`/RKBOOT/RK3588MINIALL.ini
 cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114_only-spi.bin
+cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114_only-spi_${TIMESTAMP}.bin
+
+
 cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114_only-emmc.bin
+cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114_only-emmc_${TIMESTAMP}.bin
 
 cd "$WORKDIR"
 make mrproper
@@ -38,9 +43,11 @@ make "$DEFCONFIG"
 make -j"$JOBS"
 
 dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-g98_only-spi.img bs=512 skip=64
+dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-g98_only-spi_${TIMESTAMP}.img bs=512 skip=64
 
 # only-emmc
 dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-g98_only-emmc.img bs=512 skip=64
+dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-g98_only-emmc_${TIMESTAMP}.img bs=512 skip=64
 
 #dtc -I dtb -O dts  ./dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dtb -o rk3588-bdy-g98.dts
 fdtdump ./dts/upstream/src/arm64/rockchip/rk3588-bdy-g98.dtb > rk3588-bdy-g98.dts
