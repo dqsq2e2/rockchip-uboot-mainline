@@ -413,6 +413,24 @@ void env_set_default(const char *s, int flags)
 	/* This has to be done after GD_FLG_ENV_READY is set */
 	if (env_update_fdt_addr_from_bloblist())
 		pr_err("Failed to set fdt_addr to point at DTB\n");
+
+	/*
+	 * Auto-save default environment when loaded due to bad CRC.
+	 * Only trigger on non-interactive calls (i.e., boot-time relocation),
+	 * NOT when user manually runs "env default" from command line.
+	 */
+	if (!(flags & H_INTERACTIVE)) {
+		printf("** kdev: Auto-saving default environment to Flash... **\n");
+		int ret = env_save();
+		if (ret == 0) {
+			printf("** kdev: Default environment saved successfully. **\n\n");
+			/* Clear the DEFAULT flag since we now have a valid saved env */
+			gd->flags &= ~GD_FLG_ENV_DEFAULT;
+		} else {
+			pr_err("** ERROR: Auto-save failed (err=%d)! "
+			       "Check CONFIG_ENV_OFFSET configuration. **\n\n", ret);
+		}
+	}
 }
 
 /* [re]set individual variables to their value in the default environment */

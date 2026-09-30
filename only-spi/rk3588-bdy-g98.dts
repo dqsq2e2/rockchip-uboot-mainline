@@ -15,7 +15,7 @@
 #include "rk3588.dtsi"
 
 / {
-	model = "BYD G98 Compiled By yifengyou v2026.09.27-00:02:23";
+	model = "BYD G98 Compiled By yifengyou v2026.09.30-23:38:09";
 	compatible = "rockchip,rk3588", "rockchip,rk3588-evb";
 
 	chosen {
