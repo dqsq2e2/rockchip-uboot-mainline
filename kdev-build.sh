@@ -3,7 +3,7 @@
 set -xe
 
 WORKDIR=`pwd`
-DEFCONFIG="aiot-3588ied_defconfig"
+DEFCONFIG="aiot-3588a_defconfig"
 JOBS=$(nproc)
 TIMESTAMP=$(date +%Y%m%d)
 
@@ -19,7 +19,7 @@ ls -alh ${ROCKCHIP_TPL}
 sha256sum ${BL31}
 sha256sum ${ROCKCHIP_TPL}
 
-sed -i "s#AIoT 3588IED Compiled By yifengyou.*#AIoT 3588IED Compiled By yifengyou v$(date +%Y.%m.%d-%H:%M:%S)\";#" ./dts/upstream/src/arm64/rockchip/rk3588-aiot-3588ied.dts
+sed -i "s#AIoT 3588IED Compiled By yifengyou.*#AIoT 3588IED Compiled By yifengyou v$(date +%Y.%m.%d-%H:%M:%S)\";#" ./dts/upstream/src/arm64/rockchip/rk3588-aiot-3588a.dts
 
 cd "$WORKDIR"
 rm -rf output
@@ -37,7 +37,7 @@ cp -a u-boot-rockchip.bin ${WORKDIR}/output/uboot.img
 cp -a u-boot-rockchip.bin ${WORKDIR}/output/uboot_${TIMESTAMP}.img
 
 ls -alh   output/
-ls -alh   dts/upstream/src/arm64/rockchip/rk3588-aiot-3588ied.dts
-ls -alh   configs/aiot-3588ied_defconfig
+ls -alh   dts/upstream/src/arm64/rockchip/rk3588-aiot-3588a.dts
+ls -alh   configs/aiot-3588a_defconfig
 
 echo "All done!"

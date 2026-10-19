@@ -4,13 +4,13 @@
  * Copyright (c) 2023 Thomas McKahan
  * Copyright (c) 2024 Linaro Ltd.
  *
- * AIoT-3588IED board device tree source
+ * AIoT-3588A board device tree source
  *
  * This is a copy of the NanoPC-T6 device tree with all nanopc-t6
  * references merged into a single file. The original nanopc-t6.dtsi
  * is not included.
  *
- * AIoT 3588IED Compiled By yifengyou v2026.10.08-23:13:36";
+ * AIoT 3588A Compiled By yifengyou v2026.10.19-21:38:38";
  */
 
 /dts-v1/;
@@ -24,8 +24,8 @@
 #include "rk3588.dtsi"
 
 / {
-	model = "AIoT 3588IED Compiled By yifengyou v2026.10.08-23:13:36";
-	compatible = "rockchip,rk3588-aiot-3588ied", "rockchip,rk3588";
+	model = "AIoT 3588A Compiled By yifengyou v2026.10.19-21:36:47";
+	compatible = "rockchip,rk3588-aiot-3588a", "rockchip,rk3588";
 
 	aliases {
 		mmc0 = &sdhci;
