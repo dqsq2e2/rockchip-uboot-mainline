@@ -35,7 +35,7 @@
 	ENV_MEM_LAYOUT_SETTINGS		\
 	ROCKCHIP_DEVICE_SETTINGS	\
        "boot_targets=" BOOT_TARGETS "\0" \
-       "button_cmd_0_name=Recovery key\0" \
+       "button_cmd_0_name=volume up\0" \
        "button_cmd_0=run bootcmd_recovery\0" \
        "bootcmd_recovery=" \
                "sf probe 0;" \

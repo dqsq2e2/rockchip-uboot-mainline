@@ -459,10 +459,8 @@ __weak int misc_init_r(void)
 		 * efuse/OTP read can fail when U-Boot is hot-jumped from Linux
 		 * (rkjump) without full SPL hardware init, or when the OTP
 		 * controller clock/reset is not properly reconfigured.
-		 * Don't fail the entire boot — just skip cpuid/serial# setup.
+		 * Silently skip cpuid/serial# setup — not critical for boot.
 		 */
-		printf("misc_init_r: cpuid from efuse failed (ret=%d), skipping\n",
-		       ret);
 		return 0;
 	}
 

@@ -259,9 +259,16 @@ int rockchip_saradc_probe(struct udevice *dev)
 	priv->active_channel = -1;
 
 	ret = device_get_supply_regulator(dev, "vref-supply", &vref);
-	if (ret && uc_pdata->vdd_microvolts <= 0) {
-		printf("can't get vref-supply: %d\n", ret);
-		return ret;
+	if (ret) {
+		/*
+		 * vref-supply regulator probe can time out when U-Boot is
+		 * hot-jumped from Linux (rkjump) without full SPL init, as
+		 * the PMIC I2C bus may not be re-probed in time.
+		 * Fall back to the DTS vdd-microvolts value (typically 1.8V)
+		 * instead of failing the entire probe.
+		 */
+		debug("can't get vref-supply: %d, using fallback\n", ret);
+		vref = NULL;
 	}
 
 	if (priv->reset)
@@ -269,8 +276,10 @@ int rockchip_saradc_probe(struct udevice *dev)
 
 	if (vref)
 		vref_uv = regulator_get_value(vref);
-	else
+	else if (uc_pdata->vdd_microvolts > 0)
 		vref_uv = uc_pdata->vdd_microvolts;
+	else
+		vref_uv = 1800000;  /* RK3588 SARADC standard vref 1.8V */
 	if (vref_uv < 0) {
 		printf("can't get vref-supply value: %d\n", vref_uv);
 		return vref_uv;
