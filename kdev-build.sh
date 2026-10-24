@@ -21,29 +21,28 @@ sha256sum ${ROCKCHIP_TPL}
 ls -alh  dts/upstream/src/arm64/rockchip/rk3588-aigo-s60.dts
 ls -alh  configs/aigo-s60-rk3588_defconfig
 
-cd "$WORKDIR"
-rm -rf output
-mkdir -p output
-cd rkbin
-./tools/boot_merger `pwd`/RKBOOT/RK3588MINIALL.ini
-cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114.bin
-cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114_${TIMESTAMP}.bin
+#cd "$WORKDIR"
+#rm -rf output
+#mkdir -p output
+#cd rkbin
+#./tools/boot_merger `pwd`/RKBOOT/RK3588MINIALL.ini
+#cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114.bin
+#cp -a rk3588_spl_loader_v1.21.114.bin ${WORKDIR}/output/rk3588_spl_loader_v1.21.114_${TIMESTAMP}.bin
 
 cd "$WORKDIR"
 make mrproper
 make "$DEFCONFIG"
 make -j"$JOBS"
 
-dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot.img bs=512 skip=64
-dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-aigo-s60.img bs=512 skip=64
-dd if=u-boot-rockchip-spi.bin of=${WORKDIR}/output/uboot-aigo-s60_${TIMESTAMP}.img bs=512 skip=64
+dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot.img bs=512 skip=64
+dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot-aigo-s60.img bs=512 skip=64
+dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot-aigo-s60_${TIMESTAMP}.img bs=512 skip=64
 
+#fdtdump ./dts/upstream/src/arm64/rockchip/rk3588-aigo-s60.dtb > rk3588-aigo-s60.dts
+#fdtdump ./spl/dts/dt-spl.dtb > dt-spl.dts
 
-fdtdump ./dts/upstream/src/arm64/rockchip/rk3588-aigo-s60.dtb > rk3588-aigo-s60.dts
-fdtdump ./spl/dts/dt-spl.dtb > dt-spl.dts
-
+#ls -alh   dts/upstream/src/arm64/rockchip/rk3588-aigo-s60.dts
+#ls -alh   configs/aigo-s60-rk3588_defconfig
 ls -alh   output/
-ls -alh   dts/upstream/src/arm64/rockchip/rk3588-aigo-s60.dts
-ls -alh   configs/aigo-s60-rk3588_defconfig
 
 echo "All done!"
