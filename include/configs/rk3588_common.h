@@ -37,13 +37,13 @@
        "boot_targets=" BOOT_TARGETS "\0" \
        "button_cmd_0_name=volume up\0" \
        "button_cmd_0=run bootcmd_recovery\0" \
+       "recovery_addr=0x40000000\0" \
+       "recovery_sectors=0x1f800\0" \
        "bootcmd_recovery=" \
-               "sf probe 0;" \
-               "sf read 0x40000000 0x0 0x2000000;" \
+               "echo Recovery: image at ${recovery_addr} (${recovery_sectors} sectors);" \
                "blkmap create spidisk;" \
-               "blkmap map spidisk 0 0x10000 mem 0x40000000;" \
-               "part list blkmap 0;" \
-               "sysboot blkmap 0:2 any ${scriptaddr} /recovery.conf;\0" \
+               "blkmap map spidisk 0 ${recovery_sectors} mem ${recovery_addr};" \
+               "sysboot blkmap 0 any ${scriptaddr} /recovery.conf;\0" \
 	"try_bootscr_boot=" \
 		"for distro_bootpart in 1 2 3 4 8 5 6 7 9; do " \
 			"for prefix in / /boot/; do " \
@@ -181,7 +181,7 @@
 		"setenv devnum 1; if mmc dev 1; then run boot_one_dev; fi; " \
 		"setenv devnum 2; if mmc dev 2; then run boot_one_dev; fi; " \
 		"echo EMMC: no emmc bootable media; \0" \
-	"bootcmd=run bootcmd_usb; run bootcmd_emmc;  run bootcmd_nvme; run bootcmd_scsi; " \
+	"bootcmd=run bootcmd_recovery; run bootcmd_usb; run bootcmd_emmc;  run bootcmd_nvme; run bootcmd_scsi; " \
 		"echo ERROR: No bootable device found! Enter loader mode; " \
 		"rockusb 0 mtd 2; \0"
 
