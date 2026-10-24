@@ -38,6 +38,21 @@ dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot.img bs=512 skip=64
 dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot-aigo-s60.img bs=512 skip=64
 dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot-aigo-s60_${TIMESTAMP}.img bs=512 skip=64
 
+# ---- rkjump payload ----
+# rkjump 需要裸 U-Boot 二进制 (u-boot.bin)，不是 u-boot-rockchip.bin
+# u-boot-rockchip.bin 是完整 flash 镜像 (RKNS header + SPL + FIT)，链接在 0x00000000
+# rkjump 把文件写到 PA 0x200000 然后跳 offset 0 执行
+#   → 必须用 u-boot.bin (链接在 0x200000 = CONFIG_TEXT_BASE)
+#   → 不能用 u-boot-rockchip.bin (offset 0 是 SPL，链接在 0x00000000)
+cp -f u-boot.bin ${WORKDIR}/output/u-boot-rkjump.bin
+cp -f u-boot.bin ${WORKDIR}/output/u-boot-rkjump_${TIMESTAMP}.bin
+echo "=== rkjump payload ==="
+echo "u-boot.bin entry point:"
+${CROSS_COMPILE}readelf -h u-boot | grep "Entry point"
+xxd -l 4 u-boot.bin
+echo "u-boot.bin size: $(wc -c < u-boot.bin) bytes"
+echo "→ output/u-boot-rkjump.bin 就是 rkjump 的 payload"
+
 #fdtdump ./dts/upstream/src/arm64/rockchip/rk3588-aigo-s60.dtb > rk3588-aigo-s60.dts
 #fdtdump ./spl/dts/dt-spl.dtb > dt-spl.dts
 
