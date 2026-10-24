@@ -34,6 +34,9 @@ make mrproper
 make "$DEFCONFIG"
 make -j"$JOBS"
 
+cd "$WORKDIR"
+rm -rf output
+mkdir -p output
 dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot.img bs=512 skip=64
 dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot-aigo-s60.img bs=512 skip=64
 dd if=u-boot-rockchip.bin of=${WORKDIR}/output/uboot-aigo-s60_${TIMESTAMP}.img bs=512 skip=64
