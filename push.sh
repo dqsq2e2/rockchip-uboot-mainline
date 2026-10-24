@@ -45,5 +45,5 @@ if [ "$MODE" = "go" ]; then
     echo "      串口预期: 1 2 3 4 <U-Boot output>"
     echo "      >>> SSH 将断开 <<<"
 fi
-$SSH "$REMOTE/hack.sh $MODE" 2>&1 || true
+timeout 10 $SSH "$REMOTE/hack.sh $MODE" 2>&1 || true
 

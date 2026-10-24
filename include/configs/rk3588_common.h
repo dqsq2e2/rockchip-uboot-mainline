@@ -38,14 +38,18 @@
        "button_cmd_0_name=volume up\0" \
        "button_cmd_0=run bootcmd_recovery\0" \
        "bootcmd_recovery=" \
-               "echo Recovery: scanning eMMC for //recovery.conf; " \
+               "echo Recovery: scanning eMMC for /recovery.conf; " \
                "setenv devtype mmc; " \
                "mmc rescan; " \
-				"if test -e mmc 0:4 /recovery.conf; then " \
-					   "echo Found recovery.conf on mmc 0:4 /; " \
-					   "sysboot mmc 0:4 any ${scriptaddr} /recovery.conf; " \
-					   "echo sysboot returned, trying next...; " \
-				"fi; " \
+               "part list mmc 0; " \
+               "ext2ls mmc 0:4 /; " \
+				"for recoverytry in 1 2 3 4 8 5 6 7 9; do " \
+					"if test -e mmc 0:4 /recovery.conf; then " \
+						   "echo Found recovery.conf on mmc 0:4 /; " \
+						   "sysboot mmc 0:4 any 0x40000000 /recovery.conf; " \
+						   "echo sysboot returned, trying again ... ${recoverytry}; " \
+					"fi; " \
+				"done; " \
                "echo Recovery: no /recovery.conf found on eMMC; \0" \
 	"try_bootscr_boot=" \
 		"for distro_bootpart in 1 2 3 4 8 5 6 7 9; do " \
