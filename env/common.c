@@ -418,17 +418,27 @@ void env_set_default(const char *s, int flags)
 	 * Auto-save default environment when loaded due to bad CRC.
 	 * Only trigger on non-interactive calls (i.e., boot-time relocation),
 	 * NOT when user manually runs "env default" from command line.
+	 *
+	 * Skip auto-save when env is NOWHERE (no persistent storage) to avoid
+	 * spurious errors on systems that boot without SPL hardware init
+	 * (e.g. rkjump hot-jump from Linux where SPI controller may be
+	 * uninitialized).
 	 */
-	if (!(flags & H_INTERACTIVE)) {
-		printf("** kdev: Auto-saving default environment to Flash... **\n");
-		int ret = env_save();
-		if (ret == 0) {
-			printf("** kdev: Default environment saved successfully. **\n\n");
-			/* Clear the DEFAULT flag since we now have a valid saved env */
-			gd->flags &= ~GD_FLG_ENV_DEFAULT;
+	if (!(flags & H_INTERACTIVE) && gd->env_load_prio >= 0) {
+		enum env_location loc = env_get_location(ENVOP_SAVE, gd->env_load_prio);
+		if (loc == ENVL_NOWHERE) {
+			debug("** kdev: env is NOWHERE, skipping auto-save **\n");
 		} else {
-			pr_err("** ERROR: Auto-save failed (err=%d)! "
-			       "Check CONFIG_ENV_OFFSET configuration. **\n\n", ret);
+			printf("** kdev: Auto-saving default environment to Flash... **\n");
+			int ret = env_save();
+			if (ret == 0) {
+				printf("** kdev: Default environment saved successfully. **\n\n");
+				/* Clear the DEFAULT flag since we now have a valid saved env */
+				gd->flags &= ~GD_FLG_ENV_DEFAULT;
+			} else {
+				pr_err("** ERROR: Auto-save failed (err=%d)! "
+				       "Check CONFIG_ENV_OFFSET configuration. **\n\n", ret);
+			}
 		}
 	}
 }

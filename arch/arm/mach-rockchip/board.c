@@ -454,8 +454,17 @@ __weak int misc_init_r(void)
 		return ret;
 
 	ret = rockchip_cpuid_from_efuse(cpuid_offset, cpuid_length, cpuid);
-	if (ret)
-		return ret;
+	if (ret) {
+		/*
+		 * efuse/OTP read can fail when U-Boot is hot-jumped from Linux
+		 * (rkjump) without full SPL hardware init, or when the OTP
+		 * controller clock/reset is not properly reconfigured.
+		 * Don't fail the entire boot — just skip cpuid/serial# setup.
+		 */
+		printf("misc_init_r: cpuid from efuse failed (ret=%d), skipping\n",
+		       ret);
+		return 0;
+	}
 
 	ret = rockchip_cpuid_set(cpuid, cpuid_length);
 	if (ret)
