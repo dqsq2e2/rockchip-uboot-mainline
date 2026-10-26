@@ -1,0 +1,8 @@
+LUNZN AIUI RK3588
+M:	dqsq2e2 <192683602+dqsq2e2@users.noreply.github.com>
+S:	Maintained
+F:	board/rockchip/lunzn_aiui/
+F:	configs/lunzn-aiui-rk3588_defconfig
+F:	include/configs/lunzn_aiui.h
+F:	arch/arm/dts/rk3588-lunzn-AIUI-u-boot.dtsi
+F:	dts/upstream/src/arm64/rockchip/rk3588-lunzn-AIUI.dts

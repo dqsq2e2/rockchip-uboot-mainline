@@ -419,7 +419,8 @@ void env_set_default(const char *s, int flags)
 	 * Only trigger on non-interactive calls (i.e., boot-time relocation),
 	 * NOT when user manually runs "env default" from command line.
 	 */
-	if (!(flags & H_INTERACTIVE)) {
+	if (!IS_ENABLED(CONFIG_TARGET_LUNZN_AIUI_RK3588) &&
+	    !(flags & H_INTERACTIVE)) {
 		printf("** kdev: Auto-saving default environment to Flash... **\n");
 		int ret = env_save();
 		if (ret == 0) {

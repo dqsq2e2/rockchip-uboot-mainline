@@ -1,0 +1,15 @@
+if TARGET_LUNZN_AIUI_RK3588
+
+config SYS_BOARD
+	default "lunzn_aiui"
+
+config SYS_VENDOR
+	default "rockchip"
+
+config SYS_CONFIG_NAME
+	default "lunzn_aiui"
+
+config LNX_KRNL_IMG_TEXT_OFFSET_BASE
+	default 0x0
+
+endif
