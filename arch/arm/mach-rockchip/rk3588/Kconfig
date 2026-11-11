@@ -1,5 +1,10 @@
 if ROCKCHIP_RK3588
 
+config TARGET_PHX_R3588
+	bool "PHX-R3588 board"
+	help
+	  Nanjing PHX RK3588 core board with V02 carrier.
+
 config TARGET_LUNZN_AIUI_RK3588
 	bool "LUNZN AIUI RK3588 board"
 	select LINUX_KERNEL_IMAGE_HEADER
@@ -471,6 +476,7 @@ source "board/radxa/rock-5c-rk3588s/Kconfig"
 source "board/rockchip/evb_rk3588/Kconfig"
 source "board/rockchip/bdy_g98/Kconfig"
 source "board/rockchip/lunzn_aiui/Kconfig"
+source "board/rockchip/phx_r3588/Kconfig"
 source "board/rockchip/toybrick_rk3588/Kconfig"
 source "board/theobroma-systems/jaguar_rk3588/Kconfig"
 source "board/theobroma-systems/tiger_rk3588/Kconfig"

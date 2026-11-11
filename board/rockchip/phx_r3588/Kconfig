@@ -1,0 +1,10 @@
+if TARGET_PHX_R3588
+config SYS_BOARD
+    default "phx_r3588"
+config SYS_VENDOR
+    default "rockchip"
+config SYS_CONFIG_NAME
+    default "phx_r3588"
+config LNX_KRNL_IMG_TEXT_OFFSET_BASE
+    default 0x0
+endif

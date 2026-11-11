@@ -1,0 +1,8 @@
+PHX-R3588
+M: dqsq2e2 <192683602+dqsq2e2@users.noreply.github.com>
+S: Maintained
+F: board/rockchip/phx_r3588/
+F: configs/phx-r3588_defconfig
+F: include/configs/phx_r3588.h
+F: arch/arm/dts/rk3588-phx-r3588-u-boot.dtsi
+F: dts/upstream/src/arm64/rockchip/rk3588-phx-r3588.dts
