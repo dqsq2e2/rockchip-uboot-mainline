@@ -35,8 +35,23 @@ image's loader and native partition positions.
 
 USB, NVMe, TF and eMMC are scanned in that order. A partition named
 `PHX_RECOVERY` is skipped during normal scanning on every medium. Recovery
-searches partition 1 on the supported media. Holding the ADC1 recovery key
-during boot selects recovery.
+searches partition 1 on the supported media.
+
+## Download button
+
+Hold the download button before power-on or reset. SARADC channel 1 must
+remain at or below 128 for five samples, 20 ms apart. With a USB data
+connection to a PC on the Type-C download port, a real USB host handshake
+on OTG0 requests BootROM Maskrom via the common Rockchip boot-mode reset.
+It does not start a U-Boot RockUSB storage session. VBUS alone is not used
+as the connection test.
+
+Without a host handshake within 2.5 seconds, the held key selects recovery.
+This requires an installed or externally attached `PHX_RECOVERY` partition;
+a standalone system-only disk does not contain a recovery filesystem.
+The connection probe is skipped when the key is released. The command
+`phx_otgprobe` checks the download USB handshake without exposing storage
+or resetting the board, and returns success only when a host is detected.
 
 This environment layout is incompatible with the factory GPT. Do not run
 `saveenv` against a factory disk. RAM testing must use ENV_IS_NOWHERE with
