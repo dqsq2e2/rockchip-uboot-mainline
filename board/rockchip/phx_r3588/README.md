@@ -11,17 +11,28 @@ U-Boot build dependencies, run `bash scripts/build-phx-r3588.sh`.
 The script verifies pinned Rockchip DDR/BL31 binaries and writes artifacts
 under `output/phx-r3588/`. The build does not depend on another board tree.
 
-## Disk layout
+## Disk layouts
+
+The same loader supports two independent raw disk images. A recovery image
+contains the loader, recovery filesystem and empty system area. A standalone
+system image contains the loader and its own boot/root partitions; it does
+not need a recovery partition. Both images can be written from LBA 0.
+
+The common loader and environment locations are:
 
 | Region | Byte offset | Length |
 | --- | ---: | ---: |
 | Rockchip loader | 32768 | see u-boot-rockchip.bin |
 | Redundant environment A | 16777216 | 131072 |
 | Redundant environment B | 16908288 | 131072 |
-| PHX_RECOVERY | 33554432 | 234863616 |
-| Embedded system disk | 268435456 | image dependent |
 
-System partitions are mapped into the outer GPT and keep their PARTUUIDs.
+For the recovery image, `PHX_RECOVERY` occupies 33554432..268418047.
+The recovery application can write a complete standalone system image at
+byte 268435456 and map its partitions into the outer GPT, keeping their
+PARTUUIDs. That operation retains the recovery image's outer loader and
+environment. A direct whole-disk system flash instead uses the system
+image's loader and native partition positions.
+
 USB, NVMe, TF and eMMC are scanned in that order. A partition named
 `PHX_RECOVERY` is skipped during normal scanning on every medium. Recovery
 searches partition 1 on the supported media. Holding the ADC1 recovery key
