@@ -1,0 +1,23 @@
+name: 9Tripod I3588 U-Boot
+on:
+  push:
+    branches: [9tripod-i3588]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu bison flex libssl-dev libgnutls28-dev swig python3-dev python3-setuptools python3-pyelftools device-tree-compiler u-boot-tools uuid-dev
+      - name: Build board artifacts
+        run: bash scripts/build-i3588.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 9tripod-i3588-uboot
+          path: output/i3588/
+          if-no-files-found: error

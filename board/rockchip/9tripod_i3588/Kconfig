@@ -1,0 +1,10 @@
+if TARGET_9TRIPOD_I3588
+config SYS_BOARD
+    default "9tripod_i3588"
+config SYS_VENDOR
+    default "rockchip"
+config SYS_CONFIG_NAME
+    default "9tripod_i3588"
+config LNX_KRNL_IMG_TEXT_OFFSET_BASE
+    default 0x0
+endif

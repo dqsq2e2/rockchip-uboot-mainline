@@ -1,5 +1,10 @@
 if ROCKCHIP_RK3588
 
+config TARGET_9TRIPOD_I3588
+	bool "9Tripod I3588 board"
+	help
+	  Nine Tripod I3588 core module and carrier.
+
 config TARGET_PHX_R3588
 	bool "PHX-R3588 board"
 	help
@@ -477,6 +482,7 @@ source "board/rockchip/evb_rk3588/Kconfig"
 source "board/rockchip/bdy_g98/Kconfig"
 source "board/rockchip/lunzn_aiui/Kconfig"
 source "board/rockchip/phx_r3588/Kconfig"
+source "board/rockchip/9tripod_i3588/Kconfig"
 source "board/rockchip/toybrick_rk3588/Kconfig"
 source "board/theobroma-systems/jaguar_rk3588/Kconfig"
 source "board/theobroma-systems/tiger_rk3588/Kconfig"

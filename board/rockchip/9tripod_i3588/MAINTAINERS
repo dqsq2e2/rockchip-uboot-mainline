@@ -1,0 +1,8 @@
+9Tripod I3588
+M: dqsq2e2 <192683602+dqsq2e2@users.noreply.github.com>
+S: Maintained
+F: board/rockchip/9tripod_i3588/
+F: configs/9tripod-I3588_defconfig
+F: include/configs/9tripod_i3588.h
+F: arch/arm/dts/rk3588-9tripod-I3588-u-boot.dtsi
+F: dts/upstream/src/arm64/rockchip/rk3588-9tripod-I3588.dts

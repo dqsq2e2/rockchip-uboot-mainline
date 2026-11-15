@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+#include "rk3588-u-boot.dtsi"
+
+/ {
+	chosen {
+		u-boot,spl-boot-order = "same-as-spl", &sdmmc, &sdhci;
+	};
+};
+
+&saradc {
+	vdd-microvolts = <1800000>;
+};
+
+/* U-Boot's DWC AHCI driver reads the PHY from the controller node. */
+&sata0 {
+	phys = <&combphy0_ps PHY_TYPE_SATA>;
+	phy-names = "sata-phy";
+};
