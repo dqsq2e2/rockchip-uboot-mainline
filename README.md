@@ -1,6 +1,6 @@
 # PHX-R3588 主线 U-Boot
 
-本分支适配 PHX-R3588 V02（RK3588）底板，配置为 `configs/phx-r3588_defconfig`；请勿与其他 RK3588 板的设备树混用。
+本分支适配 PHX-R3588 V02（RK3588）底板，配置为 `configs/phx-r3588_defconfig`。
 
 在 Linux 安装 AArch64 交叉工具链和 U-Boot 构建依赖后运行 `bash scripts/build-phx-r3588.sh`。脚本校验并准备 DDR 和 BL31 固件，输出 loader、默认环境与校验文件到 `output/phx-r3588/`；可通过 `PHX_BUILD_DIR`、`PHX_FIRMWARE_DIR`、`PHX_OUTPUT_DIR` 和 `JOBS` 调整。CI 配置见 `.github/workflows/`。
 
