@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+#include "rk3588-u-boot.dtsi"
+
+&uart2 {
+	/delete-property/ bootph-all;
+};
+
+&uart2m0_xfer {
+	/delete-property/ bootph-all;
+};
+
+&uart1 {
+	bootph-all;
+	clock-frequency = <24000000>;
+};
+
+&uart1m1_xfer {
+	bootph-all;
+};
+
+&saradc {
+	vdd-microvolts = <1800000>;
+};
+
+&sata0 {
+	phys = <&combphy0_ps PHY_TYPE_SATA>;
+	phy-names = "sata-phy";
+};

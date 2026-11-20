@@ -1,0 +1,10 @@
+if TARGET_AIOT_3588A2
+config SYS_BOARD
+	default "aiot_3588a2"
+config SYS_VENDOR
+	default "rockchip"
+config SYS_CONFIG_NAME
+	default "aiot_3588a2"
+config LNX_KRNL_IMG_TEXT_OFFSET_BASE
+	default 0x0
+endif

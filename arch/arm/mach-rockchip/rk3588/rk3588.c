@@ -138,6 +138,13 @@ void board_debug_uart_init(void)
 	__maybe_unused static struct rk3588_bus_ioc * const bus_ioc = (void *)BUS_IOC_BASE;
 	static struct rk3588_pmu2_ioc * const pmu2_ioc = (void *)PMU2_IOC_BASE;
 
+	if (IS_ENABLED(CONFIG_TARGET_AIOT_3588A2)) {
+		/* TTL1: UART1 M1, GPIO1_B6/B7, mux function 10. */
+		rk_clrsetreg(&bus_ioc->gpio1b_iomux_sel_h, GENMASK(15, 8),
+			     (10 << 12) | (10 << 8));
+		return;
+	}
+
 	/* Refer to BUS_IOC */
 	rk_clrsetreg(&pmu2_ioc->gpio0b_iomux_sel_h,
 		     GPIO0B6_MASK | GPIO0B5_MASK,

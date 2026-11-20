@@ -277,6 +277,8 @@ static int scmi_base_discover_list_protocols_int(struct udevice *dev,
 		return ret;
 
 	out_size = sizeof(*out) + sizeof(u32) * (1 + num_protocols / 4);
+	/* Older servers pad the protocol array to three words. */
+	out_size = max_t(u32, out_size, sizeof(*out) + 3 * sizeof(u32));
 	out = calloc(1, out_size);
 	if (!out)
 		return -ENOMEM;
@@ -291,19 +293,31 @@ static int scmi_base_discover_list_protocols_int(struct udevice *dev,
 
 	cur = 0;
 	do {
+		msg.out_msg_sz = out_size;
 		ret = devm_scmi_process_msg(dev, &msg);
 		if (ret)
 			goto err;
+		if (msg.out_msg_sz < sizeof(*out)) {
+			ret = -EPROTO;
+			goto err;
+		}
 		if (out->status) {
 			ret = scmi_to_linux_errno(out->status);
 			goto err;
 		}
 
+		if (!out->num_protocols || out->num_protocols > num_protocols - cur ||
+		    DIV_ROUND_UP(out->num_protocols, 4) >
+		    (msg.out_msg_sz - sizeof(*out)) / sizeof(u32)) {
+			ret = -EPROTO;
+			goto err;
+		}
 		for (i = 0; i < out->num_protocols; i++, cur++)
 			buf[cur] = out->protocols[i / 4] >> ((i % 4) * 8);
 	} while (cur < num_protocols);
 
 	*protocols = buf;
+	free(out);
 
 	return num_protocols;
 err:
